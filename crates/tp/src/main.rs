@@ -1,11 +1,17 @@
 mod cli;
 mod config;
+mod error;
+mod tmux;
 
+use crate::tmux::create_session;
+use anyhow::Result;
 use config::PathOptions;
 use skim::prelude::*;
 use std::collections::VecDeque;
 use std::io::Cursor;
 use std::path::PathBuf;
+use std::string::ToString;
+use std::vec::Vec;
 
 fn search_projects() -> String {
     let options = SkimOptionsBuilder::default()
@@ -33,7 +39,7 @@ fn search_projects() -> String {
 }
 
 fn find_projects(paths: Vec<PathOptions>) -> Vec<String> {
-    let mut projects: Vec<String> = Vec::new();
+    let mut projects = Vec::new();
 
     for path_opts in paths {
         if path_opts.git {
@@ -50,8 +56,7 @@ fn find_projects(paths: Vec<PathOptions>) -> Vec<String> {
 }
 
 fn find_directories(path: PathBuf, exlude: Option<Vec<String>>) -> Vec<String> {
-    let mut dirs: Vec<String> = Vec::new();
-
+    let mut dirs = Vec::new();
     let mut to_search = VecDeque::new();
 
     to_search.extend(
@@ -61,7 +66,7 @@ fn find_directories(path: PathBuf, exlude: Option<Vec<String>>) -> Vec<String> {
     );
 
     while let Some(file) = to_search.pop_front() {
-        let file_path = file.into_os_string().into_string().unwrap();
+        let file_path = file.clone().into_os_string().into_string().unwrap();
 
         let is_excluded = match &exlude {
             Some(exlude) => exlude.iter().any(|exl| file_path.contains(exl)),
@@ -77,8 +82,7 @@ fn find_directories(path: PathBuf, exlude: Option<Vec<String>>) -> Vec<String> {
 }
 
 fn find_repos(path: PathBuf, exlude: Option<Vec<String>>) -> Vec<String> {
-    let mut repos: Vec<String> = Vec::new();
-
+    let mut repos = Vec::new();
     let mut to_search = VecDeque::new();
 
     to_search.push_front(path);
@@ -107,12 +111,17 @@ fn find_repos(path: PathBuf, exlude: Option<Vec<String>>) -> Vec<String> {
     repos
 }
 
-fn main() {
+fn main() -> Result<()> {
     let cli = cli::create_app();
 
     let matches = cli.get_matches();
 
-    let selected_project = search_projects();
+    let selected_project = PathBuf::from(search_projects());
 
-    println!("{}", selected_project);
+    create_session(
+        selected_project.to_str().unwrap(),
+        selected_project.file_name().unwrap().to_str().unwrap(),
+    )?;
+
+    Ok(())
 }

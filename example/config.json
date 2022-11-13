@@ -1,0 +1,15 @@
+{
+  "paths": [
+    {
+      "path": "/home/branco/dev",
+      "ignore": ["takaro"],
+      "git": true
+    },
+    {
+      "path": "/home/branco/.config",
+      "git": false
+    }
+  ],
+
+  "ignore": ["node_modules"]
+}

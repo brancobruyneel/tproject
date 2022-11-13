@@ -7,13 +7,13 @@ pub struct PathOptions {
 
     pub git: bool,
 
-    pub exlude: Option<Vec<String>>,
+    pub ignore: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub paths: Vec<PathOptions>,
-    pub exlude: Option<Vec<String>>,
+    pub ignore: Option<Vec<String>>,
 }
 
 pub(crate) fn get() -> Config {

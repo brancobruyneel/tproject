@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-  "crates/tp"
+  "crates/tp",
+  "crates/skim-tmux"
 ]

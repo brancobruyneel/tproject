@@ -43,11 +43,11 @@ fn find_projects(paths: Vec<PathOptions>) -> Vec<String> {
 
     for path_opts in paths {
         if path_opts.git {
-            projects.extend(find_repos(PathBuf::from(path_opts.path), path_opts.exlude));
+            projects.extend(find_repos(PathBuf::from(path_opts.path), path_opts.ignore));
         } else {
             projects.extend(find_directories(
                 PathBuf::from(path_opts.path),
-                path_opts.exlude,
+                path_opts.ignore,
             ));
         }
     }
